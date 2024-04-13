@@ -1,15 +1,17 @@
 type WeatherGridProps = {
-    // weatherType: string;
+    // weatherIcon: string;
     weatherTypeName: string;
     tempC: number;
     tempF: number;
     humidity: number;
     wind: number;
+    location: string;
 }
 
 const WeatherGrid = (props: WeatherGridProps) => {
     return (
     <div className="w-64 cursor-pointer border b-gray-400 rounded flex flex-col justify-center items-center text-center p-6 bg-white">
+        <div className="text-md font-bold flex flex-col text-gray-900"><span className="uppercase">{props.location}</span></div>
         <div className="w-32 h-32 flex items-center justify-center">
             {/* <p>{props.weatherType}</p> */}
             {/* <svg className="h-20" viewBox="0 0 81 73" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -26,7 +28,7 @@ const WeatherGrid = (props: WeatherGridProps) => {
             </svg> */}
         </div>
         <p className="text-gray-700 mb-2">{props.weatherTypeName}</p>
-        <div className="text-3xl font-bold text-gray-900 mb-6">{props.tempC}<span className="font-normal text-gray-700 mx-1">/</span>{props.tempF}</div>
+        <div className="text-3xl font-bold text-gray-900 mb-6">{props.tempC}<sup>o</sup>C<span className="font-normal text-gray-700 mx-1">/</span>{props.tempF}<sup>o</sup>F</div>
         <div className="flex justify-between w-full">
             <div className="flex items-center text-gray-700 px-2">
             <svg className="mr-2 h-4" viewBox="0 0 11 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
