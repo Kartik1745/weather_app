@@ -1,4 +1,4 @@
-export const fetchPlace = async (text) => {
+export const fetchPlace = async (text:string) => {
     try {
       const res = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?access_token=pk.eyJ1Ijoia2FydGlrMTI5OCIsImEiOiJjbHV4ZG5xeXUwbjNoMmtxdDc0YTNsOXh5In0.Fx5rXUWnaIdALbJI_XuduQ&cachebuster=1625641871908&autocomplete=true&types=place`
