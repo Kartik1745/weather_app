@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
 import temp from "assets/temp.gif";
@@ -9,7 +8,7 @@ import { fetchWeather } from "api/fetchweather";
 import { fetchWeaklyWeather } from "api/weeklyweather";
 import WeatherGrid from "components/ui/weather-grid";
 import Graph from "components/ui/graph";
-import dailyWeather from "components/ui/dailyweather";
+import DailyWeather from "components/ui/dailyweather";
 
 
 type City = {
@@ -61,7 +60,7 @@ function App() {
   const [inputText, setInputText] = useState("");
   const [completeCity, setCompleteCity] = useState<City[] | []>([]);
   const [foreCasthours, setForeCasthours] = useState<ForecastData>([]);
-  const [forecastWeek, setForecastWeek] = useState<ForecastData>([]);
+  const [forecastWeek, setForecastWeek] = useState<ForecastData[]>([]);
   const [TodayData, setTodayData] = useState<weatherData>();
   const [subscribedCities, setSubscribedCities] = useState<SubscribedCity[]>([]);
 
@@ -123,8 +122,9 @@ function App() {
 
 
   return (
-    <div>
-      <div className="flex flex-col items-center justify-center mt-20 relative">
+    <div className="">
+      <div className="flex flex-col items-center justify-center mt-2 relative">
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">Weather App</h1>
           <div className="">
             <div className="flex gap-1 w-full">
               <Input
@@ -156,15 +156,15 @@ function App() {
             {/* </div> */}
           </div>
       </div>
-      <div className="flex pt-56 gap-8">
-        <div className="flex items-center justify-center w-1/3">
+      {TodayData && (<div className="flex flex-col md:flex-row items-center justify-center pt-44 gap-8 bg-gray-100 rounded-lg shadow-lg p-8">
+        <div className="flex items-center justify-center md:w-1/3 ml-auto">
         {TodayData && <WeatherGrid weatherTypeName={TodayData.weather[0].main} tempC={TodayData.main.temp} humidity={TodayData.main.humidity} wind={TodayData.wind.speed} location={TodayData.name} weathericon={TodayData.weather[0].icon} />}
         </div>
-        <div className="px-4 flex justify-start w-2/3">
+        {TodayData && (<div className="px-2 md:px-4 flex flex-col justify-start md:w-2/3">
           <Graph props={foreCasthours} />
-        </div> 
-          {/* <dailyWeather props={forecastWeek} /> */}
-      </div>
+          <DailyWeather props={forecastWeek} />
+        </div>) }
+      </div>)}
     </div>
   );
 }

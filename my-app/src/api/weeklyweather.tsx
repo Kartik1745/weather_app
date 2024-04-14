@@ -1,7 +1,6 @@
 type ForecastRecord = {
     max: number;
     min: number;
-    time: string;
     weekday: string;
     weather_icon: string;
   };
@@ -63,15 +62,19 @@ export const fetchWeaklyWeather = {
           });
       },
       
-     extractDailyTemperatures: (WeatherData: ForecastRecord[]) => {
+     extractDailyTemperatures: (WeatherData: ForecastRecord[][]) => {
       console.log('Inside extractDailyTemperatures WeatherData:', WeatherData);
-      const dailyTemperatures: { [key: string]: { min: number, max: number } } = {};
+      if (WeatherData.length === 0) {
+        return [];
+      }
+      const dailyTemperatures: { [key: string]: { min: number, max: number, weekday:string, weather_icon: string } } = {};
         
-        WeatherData.forEach(entry => {
-            const { weekday, min, max } = entry;
+        WeatherData[0].forEach(entry => {
+            const { weekday, min, max, weather_icon } = entry;
+            // console.log('entry:', entry);
             
             if (!dailyTemperatures[weekday]) {
-                dailyTemperatures[weekday] = { min: min, max: max };
+                dailyTemperatures[weekday] = { min: min, max: max, weekday: weekday, weather_icon: weather_icon};
             } else {
                 dailyTemperatures[weekday].min = Math.min(dailyTemperatures[weekday].min, min);
                 dailyTemperatures[weekday].max = Math.max(dailyTemperatures[weekday].max, max);
@@ -81,7 +84,8 @@ export const fetchWeaklyWeather = {
         return Object.entries(dailyTemperatures).map(([weekday, temperatures]) => ({
           weekday: weekday,
           min: temperatures.min,
-          max: temperatures.max
+          max: temperatures.max,
+          weather_icon: temperatures.weather_icon
         }));
     },
       
