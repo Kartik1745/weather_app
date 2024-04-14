@@ -65,6 +65,8 @@ function App() {
   const [subscribedCities, setSubscribedCities] = useState<SubscribedCity[]>([]);
   const [tempratureType, setTempratureType] = useState("C");
   const [userLocation, setUserLocation] = useState<{ lat: null | number; lon: null | number }>({ lat: null, lon: null });
+  const [isLoading, setIsLoading] = useState(true);
+
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -101,6 +103,8 @@ function App() {
   }, [inputText]);
 
   useEffect(() => {
+    setIsLoading(true);
+
     if (userLocation.lat && userLocation.lon) {
       fetchWeather(String(userLocation.lat), String(userLocation.lon)).then((data) => {
         setTodayData(data);
@@ -109,6 +113,7 @@ function App() {
         const newData = data[0].slice(0, 8);
         setForeCasthours(newData);
         setForecastWeek(data);
+        setIsLoading(false);
       });
     }
 
@@ -120,6 +125,7 @@ function App() {
         const newData = data[0].slice(0, 8)
         setForeCasthours(newData);
         setForecastWeek(data);
+        setIsLoading(false);
       } );
     }
   }, [subscribedCities, userLocation.lat, userLocation.lon]);
@@ -160,23 +166,41 @@ function App() {
             {/* </div> */}
           </div>
       </div>
-      {TodayData && (<div className="flex flex-col md:flex-row items-center justify-center pt-32 gap-8 bg-gray-100 p-8">
-        <div className="flex flex-col gap-6 items-center justify-center md:w-1/3 ml-auto">
-        <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => {
-              setTempratureType(tempratureType === "C" ? "F" : "C");
-            }}
-          >
-            Toggle °C/°F
-        </button>
-        {TodayData && <WeatherGrid weatherTypeName={TodayData.weather[0].main} tempC={toggletemperature(TodayData.main.temp,tempratureType)}  humidity={TodayData.main.humidity} wind={TodayData.wind.speed} location={TodayData.name} weathericon={TodayData.weather[0].icon} temperatureType = {tempratureType} />}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
         </div>
-        {TodayData && (<div className="px-2 md:px-4 flex flex-col justify-start md:w-2/3">
-          <Graph props={foreCasthours} tempratureType = {tempratureType} />
-          <DailyWeather props={forecastWeek} tempratureType = {tempratureType} />
-        </div>) }
-      </div>)}
+    ) : (
+      TodayData && (
+        <div className="flex flex-col md:flex-row items-center justify-center pt-32 gap-8 bg-gray-100 p-8">
+          <div className="flex flex-col gap-6 items-center justify-center md:w-1/3 ml-auto">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => {
+                setTempratureType(tempratureType === "C" ? "F" : "C");
+              }}
+            >
+              Toggle °C/°F
+            </button>
+            {TodayData && (
+              <WeatherGrid
+                weatherTypeName={TodayData.weather[0].main}
+                tempC={toggletemperature(TodayData.main.temp, tempratureType)}
+                humidity={TodayData.main.humidity}
+                wind={TodayData.wind.speed}
+                location={TodayData.name}
+                weathericon={TodayData.weather[0].icon}
+                temperatureType={tempratureType}
+              />
+            )}
+          </div>
+          <div className="px-2 md:px-4 flex flex-col justify-start md:w-2/3">
+            <Graph props={foreCasthours} tempratureType={tempratureType} />
+            <DailyWeather props={forecastWeek} tempratureType={tempratureType} />
+          </div>
+        </div>
+  )
+)}
     </div>
   );
 }
