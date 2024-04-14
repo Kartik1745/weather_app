@@ -1,4 +1,3 @@
-import { WidthIcon } from "@radix-ui/react-icons";
 
 type WeatherGridProps = {
     weatherTypeName: string;
@@ -7,7 +6,9 @@ type WeatherGridProps = {
     wind: number;
     location: string;
     weathericon: string;
+    temperatureType: string;
 }
+
 
 const WeatherGrid = (props: WeatherGridProps) => {
     return (
@@ -25,7 +26,7 @@ const WeatherGrid = (props: WeatherGridProps) => {
     </div>
     <p className="mb-2 text-gray-600">{props.weatherTypeName}</p>
     <div className="mb-4 text-4xl font-bold text-gray-800">
-      {props.tempC}<sup>o</sup>C
+      {props.tempC}<sup>o</sup>{props.temperatureType}
     </div>
     <div className="flex justify-center">
       <div className="flex items-center mr-6 text-gray-600">

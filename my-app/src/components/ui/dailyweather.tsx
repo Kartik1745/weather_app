@@ -1,13 +1,19 @@
 import { fetchWeaklyWeather } from "api/weeklyweather";
+import { toggletemperature } from "lib/utils";
 
 type ForecastRecord = {
     max: number;
     min: number;
     weekday: string;
     weather_icon: string;
-  };
+  }[][];
 
-const DailyWeather = ({props}: {props: ForecastRecord[][]}) => {
+type Props = {
+    props: ForecastRecord;
+    tempratureType: string;
+}
+
+const DailyWeather = ({props,tempratureType}: Props) => {
     const data = fetchWeaklyWeather.extractDailyTemperatures(props) ;
     return(
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -38,7 +44,7 @@ const DailyWeather = ({props}: {props: ForecastRecord[][]}) => {
                 <tr className="text-sm text-gray-700 text-center">
                 {data.map((forecast) => (
                     <td key={forecast.weekday} className="px-4 py-3">
-                    {forecast.max}° | {forecast.min}°
+                    {toggletemperature(forecast.max, tempratureType)}° | {toggletemperature(forecast.min, tempratureType)}°
                     </td>
                 ))}
                 </tr>

@@ -8,6 +8,7 @@ import { fetchWeaklyWeather } from "api/weeklyweather";
 import WeatherGrid from "components/ui/weather-grid";
 import Graph from "components/ui/graph";
 import DailyWeather from "components/ui/dailyweather";
+import { toggletemperature } from "lib/utils";
 
 
 type City = {
@@ -62,8 +63,29 @@ function App() {
   const [forecastWeek, setForecastWeek] = useState<ForecastData[]>([]);
   const [TodayData, setTodayData] = useState<weatherData>();
   const [subscribedCities, setSubscribedCities] = useState<SubscribedCity[]>([]);
+  const [tempratureType, setTempratureType] = useState("C");
+  const [userLocation, setUserLocation] = useState<{ lat: null | number; lon: null | number }>({ lat: null, lon: null });
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
 
-
+  useEffect(() => {
+    getUserLocation();
+  }, []);
 
   const onCitySubscribe = (city: City) => {
     setSubscribedCities([
@@ -79,6 +101,16 @@ function App() {
   }, [inputText]);
 
   useEffect(() => {
+    if (userLocation.lat && userLocation.lon) {
+      fetchWeather(String(userLocation.lat), String(userLocation.lon)).then((data) => {
+        setTodayData(data);
+      });
+      fetchWeaklyWeather.getTodayData(String(userLocation.lat), String(userLocation.lon)).then((data) => {
+        const newData = data[0].slice(0, 8);
+        setForeCasthours(newData);
+        setForecastWeek(data);
+      });
+    }
 
     if (subscribedCities.length > 0) {
       fetchWeather((subscribedCities[0].lat), (subscribedCities[0].lon)).then((data) => {
@@ -90,16 +122,12 @@ function App() {
         setForecastWeek(data);
       } );
     }
-  }, [subscribedCities]);
-
-  useEffect(() => {
-    const data = fetchWeaklyWeather.extractDailyTemperatures(forecastWeek);
-  }, [forecastWeek]);
+  }, [subscribedCities, userLocation.lat, userLocation.lon]);
 
 
   return (
     <div className="h-screen bg-gray-100">
-      <div className="flex flex-col items-center justify-center mt-2 relative">
+      <div className="flex flex-col items-center justify-center pt-8 relative">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Weather App</h1>
           <div className="">
             <div className="flex gap-1 w-full">
@@ -112,12 +140,12 @@ function App() {
               />
             </div>
             {inputText && (
-              <div className="absolute mt-2 w-96 text-sm border-0 lg:border-4 border-blue-100 dark:border-blue-400 rounded-xl">
+              <div className="absolute mt-2 w-96 bg-gray-200 z-10 text-sm border-0 lg:border-4 border-blue-100 dark:border-blue-400 rounded-xl">
                 <ul className="w-full p-2">
                   {completeCity.map((city, i) => (
                     <li
                       key={i}
-                      className="flex justify-between items-center py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-600 rounded-md w-full"
+                      className="flex justify-between  items-center py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-600 rounded-md w-full"
                       onClick={(e) => {
                         e.preventDefault();
                         onCitySubscribe(city);
@@ -132,13 +160,21 @@ function App() {
             {/* </div> */}
           </div>
       </div>
-      {(<div className="flex flex-col md:flex-row items-center justify-center pt-44 gap-8 bg-gray-100 p-8">
-        <div className="flex items-center justify-center md:w-1/3 ml-auto">
-        {TodayData && <WeatherGrid weatherTypeName={TodayData.weather[0].main} tempC={TodayData.main.temp} humidity={TodayData.main.humidity} wind={TodayData.wind.speed} location={TodayData.name} weathericon={TodayData.weather[0].icon} />}
+      {TodayData && (<div className="flex flex-col md:flex-row items-center justify-center pt-32 gap-8 bg-gray-100 p-8">
+        <div className="flex flex-col gap-6 items-center justify-center md:w-1/3 ml-auto">
+        <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => {
+              setTempratureType(tempratureType === "C" ? "F" : "C");
+            }}
+          >
+            Toggle °C/°F
+        </button>
+        {TodayData && <WeatherGrid weatherTypeName={TodayData.weather[0].main} tempC={toggletemperature(TodayData.main.temp,tempratureType)}  humidity={TodayData.main.humidity} wind={TodayData.wind.speed} location={TodayData.name} weathericon={TodayData.weather[0].icon} temperatureType = {tempratureType} />}
         </div>
         {TodayData && (<div className="px-2 md:px-4 flex flex-col justify-start md:w-2/3">
-          <Graph props={foreCasthours} />
-          <DailyWeather props={forecastWeek} />
+          <Graph props={foreCasthours} tempratureType = {tempratureType} />
+          <DailyWeather props={forecastWeek} tempratureType = {tempratureType} />
         </div>) }
       </div>)}
     </div>

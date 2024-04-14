@@ -1,3 +1,4 @@
+import { toggletemperature } from "lib/utils";
 import React from "react";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -7,13 +8,24 @@ type ForecastRecord = {
     time: string;
     weekday: string;
     weather_icon: string;
-  };
+  }[];
 
-const Graph = ({props}: {props: ForecastRecord[]}) => {
+type Props = {
+    props: ForecastRecord;
+    tempratureType: string;
+}  
+
+const Graph = ({props, tempratureType}: Props) => {
     return (
         <ResponsiveContainer width="100%" height={150}>
             <AreaChart
-            data={props}
+            data={props.map((itm) => {
+                return{
+                    ...itm,
+                    max: toggletemperature(itm.max, tempratureType),
+                    min: toggletemperature(itm.min, tempratureType)
+                }
+            })}
             margin={{ top: 20, right: 30, left: 25, bottom: 0 }}
             >
             <defs>
