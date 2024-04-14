@@ -8,7 +8,6 @@ type ForecastRecord = {
   };
 
 const DailyWeather = ({props}: {props: ForecastRecord[][]}) => {
-    // console.log('Inside dailyWeather:', props);
     const data = fetchWeaklyWeather.extractDailyTemperatures(props) ;
     return(
         <div className="bg-white rounded-lg shadow-md p-6">

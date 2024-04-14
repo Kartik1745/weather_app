@@ -12,9 +12,7 @@ const getIconUrl = (icon:string) => {
 const formatDate = (utc:number, timezone:number, format:string) =>  {
 
     const dt_timezone = new Date(utc * 1e3 + timezone * 1e3).toISOString();
-    // console.log('dt_timezone:', dt_timezone);
     const dt = new Date(dt_timezone.substr(0, 19));
-    // console.log('dt:', dt);
     if (format === "day") {
       return  dt.getDate();
     } else if (format === "time") {
@@ -35,14 +33,11 @@ const formatDate = (utc:number, timezone:number, format:string) =>  {
 export const fetchWeaklyWeather = {
     
     getTodayData: async (lat: string, lon: string) => {
-        console.log("inside getTodayData")
         return await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=66124b154e482a21774c9eaa6df5b23b&units=metric`)
           .then(response => {
-            console.log("calling api", response);    
             return response.json();
           })
           .then(data => (
-            // console.log("data.list", data),
             data.list.map((itm: any) => {
                 return {
                     max: parseInt(itm.main.temp_max, 0),
@@ -53,26 +48,21 @@ export const fetchWeaklyWeather = {
                 }
             })))
           .then(data => {
-            // console.log("TodayData: ", data);
             return [data];
           })
           .catch(error => {
-            // console.log("Error: ", error);
             return [];
           });
       },
       
      extractDailyTemperatures: (WeatherData: ForecastRecord[][]) => {
-      console.log('Inside extractDailyTemperatures WeatherData:', WeatherData);
       if (WeatherData.length === 0) {
         return [];
       }
       const dailyTemperatures: { [key: string]: { min: number, max: number, weekday:string, weather_icon: string } } = {};
         
         WeatherData[0].forEach(entry => {
-            const { weekday, min, max, weather_icon } = entry;
-            // console.log('entry:', entry);
-            
+            const { weekday, min, max, weather_icon } = entry;            
             if (!dailyTemperatures[weekday]) {
                 dailyTemperatures[weekday] = { min: min, max: max, weekday: weekday, weather_icon: weather_icon};
             } else {
@@ -80,7 +70,6 @@ export const fetchWeaklyWeather = {
                 dailyTemperatures[weekday].max = Math.max(dailyTemperatures[weekday].max, max);
             }
         });
-        console.log('Daily Temperatures:', dailyTemperatures);
         return Object.entries(dailyTemperatures).map(([weekday, temperatures]) => ({
           weekday: weekday,
           min: temperatures.min,
