@@ -33,7 +33,7 @@ const formatDate = (utc:number, timezone:number, format:string) =>  {
 export const fetchWeaklyWeather = {
     
     getTodayData: async (lat: string, lon: string) => {
-        return await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=66124b154e482a21774c9eaa6df5b23b&units=metric`)
+        return await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.REACT_APP_Weather_API}&units=metric`)
           .then(response => {
             return response.json();
           })
