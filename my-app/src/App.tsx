@@ -70,39 +70,23 @@ function App() {
     setSubscribedCities([
         { lat: city.center[1], lon: city.center[0], id: city.id }
       ]);
-      setInputText(""); // Clear the input text
+      setInputText("");
    };
 
   useEffect(() => {
-    console.log("inputText", inputText);
-
     fetchPlace(inputText).then((data) => {
-      console.log("data", data);
       setCompleteCity(data.features);
     });
   }, [inputText]);
 
   useEffect(() => {
-    // console.log("inputText", inputText);
-    // console.log("foreCasthours", foreCasthours);
-    // console.log("subscribedCities", subscribedCities);
-    // console.log("completeCity", completeCity);
-    // console.log("forecastweek", forecastWeek);
-    // console.log("TodayData", TodayData);
-  }, [inputText, foreCasthours, subscribedCities, completeCity, forecastWeek, TodayData]);
-
-  useEffect(() => {
-    console.log("subscribedCities", subscribedCities);
 
     if (subscribedCities.length > 0) {
       fetchWeather((subscribedCities[0].lat), (subscribedCities[0].lon)).then((data) => {
-        // console.log("weatherData", data);
-        // console.log("weatherData", data.weather[0].description);
         setTodayData(data);
       });
       fetchWeaklyWeather.getTodayData((subscribedCities[0].lat), (subscribedCities[0].lon)).then((data) => {
         const newData = data[0].slice(0, 8)
-        console.log("weatherData", data, newData); 
         setForeCasthours(newData);
         setForecastWeek(data);
       } );
@@ -111,18 +95,11 @@ function App() {
 
   useEffect(() => {
     const data = fetchWeaklyWeather.extractDailyTemperatures(forecastWeek);
-    console.log("extractDailyTemperatures data", data);
   }, [forecastWeek]);
-  
-  // useEffect(() => {
-  //   if (TodayData.length > 0) {
-  //     setForeCasthours(TodayData.slice(8));
-  //   }
-  // }, [TodayData]);
 
 
   return (
-    <div className="">
+    <div className="h-screen bg-gray-100">
       <div className="flex flex-col items-center justify-center mt-2 relative">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Weather App</h1>
           <div className="">
@@ -156,7 +133,7 @@ function App() {
             {/* </div> */}
           </div>
       </div>
-      {TodayData && (<div className="flex flex-col md:flex-row items-center justify-center pt-44 gap-8 bg-gray-100 rounded-lg shadow-lg p-8">
+      {(<div className="flex flex-col md:flex-row items-center justify-center pt-44 gap-8 bg-gray-100 p-8">
         <div className="flex items-center justify-center md:w-1/3 ml-auto">
         {TodayData && <WeatherGrid weatherTypeName={TodayData.weather[0].main} tempC={TodayData.main.temp} humidity={TodayData.main.humidity} wind={TodayData.wind.speed} location={TodayData.name} weathericon={TodayData.weather[0].icon} />}
         </div>
