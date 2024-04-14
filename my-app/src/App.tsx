@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 
-import temp from "assets/temp.gif";
 import { Input } from "components/ui/input";
 import fetchPlace from "api/fetchplace";
 import { fetchWeather } from "api/fetchweather";

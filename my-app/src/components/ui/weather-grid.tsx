@@ -1,10 +1,8 @@
 import { WidthIcon } from "@radix-ui/react-icons";
 
 type WeatherGridProps = {
-    // weatherIcon: string;
     weatherTypeName: string;
     tempC: number;
-    // tempF: number;
     humidity: number;
     wind: number;
     location: string;
